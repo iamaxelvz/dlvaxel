@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>AxelShop</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+             background-image: url('galaxia.gif');
+            background-size: cover; /* Ajusta la imagen al tamaño de la pantalla */
+            background-repeat: no-repeat;
+            background-position: center center;
+            height: 100vh;
+            margin: 0;
+    }
+
+    h1 {
+      text-align: center;
+      color: #00b6ff;
+    }
+
+    .products {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .product {
+      padding: 15px;
+      width: 250px;
+      text-align: center;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+
+    .product img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .product button {
+      margin-top: 10px;
+      padding: 10px;
+      background-color: #ff0000;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    #cart {
+      margin-top: 30px;
+      padding: 20px;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .cart-item button {
+      background-color: red;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    .btn-finalizar {
+      margin-top: 20px;
+      background-color: #007bff;
+      color: black;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1><i>🛍️ AxelShop</i></h1>
+
+  <div class="products">
+    <div class="product">
+      <img src="p22.png" alt="AIRPORDS PRO 2 GEN" class="thumbnail" onclick="abrirModal(this.src)">
+      <h3><p style="color: white;">AIRPODS PRO 2 GEN</h3>
+      <p><p style="color: white;">$500 MXN</p>
+      <button onclick="addToCart('AIRPODS PRO 2 GEN', 500)">Agregar al carrito</button>
+    </div>
+    <div class="product">
+      <img src="gorras.png" alt="Gorras" class="thumbnail" onclick="abrirModal(this.src)" width="200" height="150" >
+      <h3><p style="color: white;">Gorras</h3>
+      <p><p style="color: white;">$250MXN, 2x400MXN</p>
+      <button onclick="addToCart('Gorras', 250)">Agregar al carrito</button>
+    </div>
+    <div class="product">
+      <img src="vps.jpg" alt="VAPES BUGGATTI " class="thumbnail" onclick="abrirModal(this.src)" width="200" height="150">
+      <h3><p style="color: white;">VAPES BUGGATTI 7K HITS tropical mango y doble menta</h3>
+      <p><p style="color: white;">$350MXN</p>
+      <button onclick="addToCart('VAPE BUGGATTI', 350)">Agregar al carrito</button>
+    </div>
+	<div class="product">
+    <img src="airpods.png" alt="VAPES MOTI " class="thumbnail" onclick="abrirModal(this.src)" width="200" height="150">
+      <h3><p style="color: white;">VAPES MOTI 2K HITS vainilla </h3>
+      <p><p style="color: white;">$150MXN</p>
+      <button onclick="addToCart('VAPE MOTI', 150)">Agregar al carrito</button>
+    </div>
+  </div>
+
+  <div id="cart">
+    <h2><p style="color: white;"><strong>🛒 Carrito de compras</p></strong></h2>
+    <div id="cart-items"<p style="color: white;"></p></div>
+    <p style="color: white;"><strong>Total:</strong> $<span id="total">0</span> MXN</p>
+    <button class="btn-finalizar" onclick="sendToWhatsApp()">Finalizar compra por WhatsApp</button>
+  </div>
+   <p style="color: white;"><strong>PARA MÁS INFORMACIÓN O DUDAS PREGUNTAR AL WhatsApp AL MOMENTO DE HACER EL CARRITO O COMPRA</strong></p>
+ <!-- Modal -->
+  <div id="miModal" class="modal" onclick="cerrarModal()">
+    <span class="close" onclick="cerrarModal()">&times;</span>
+    <img class="modal-content" id="imagenModal">
+  </div>
+  <script>
+ function abrirModal(src) {
+      document.getElementById("miModal").style.display = "block";
+      document.getElementById("imagenModal").src = src;
+    }
+   
+    function cerrarModal() {
+      document.getElementById("miModal").style.display = "none";
+    }
+ 
+    let cart = [];
+    let total = 0;
+
+    function addToCart(product, price) {
+      cart.push({ product, price });
+      updateCart();
+    }
+
+    function removeFromCart(index) {
+      total -= cart[index].price;
+      cart.splice(index, 1);
+      updateCart();
+    }
+
+    function updateCart() {
+      const cartItems = document.getElementById('cart-items');
+      cartItems.innerHTML = '';
+      total = 0;
+
+      cart.forEach((item, index) => {
+        total += item.price;
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+          ${item.product} - $${item.price} MXN
+          <button onclick="removeFromCart(${index})">X</button>
+        `;
+        cartItems.appendChild(div);
+      });
+
+      document.getElementById('total').textContent = total;
+    }
+
+    function sendToWhatsApp() {
+      if (cart.length === 0) {
+        alert("Tu carrito está vacío.");
+        return;
+      }
+
+      let message = "Hola, quiero comprar:\n";
+      cart.forEach(item => {
+        message += `- ${item.product}: $${item.price} MXN\n`;
+      });
+      message += `Total: $${total} MXN`;
+
+      const phoneNumber = "524499909106";
+      const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+      window.open(url, '_blank');
+    }
+  </script>
+
+</body>
+</html>
+
